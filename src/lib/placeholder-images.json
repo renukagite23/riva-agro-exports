@@ -1,0 +1,94 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-banner",
+      "description": "A vast green field under a clear blue sky, representing agriculture.",
+      "imageUrl": "https://images.unsplash.com/photo-1560493676-04071c5f467b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhZ3JpY3VsdHVyZSUyMGZpZWxkfGVufDB8fHx8MTc2NTgxMzQ2NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "agriculture field"
+    },
+    {
+      "id": "yellow-maize-1",
+      "description": "Close-up of vibrant yellow maize cobs.",
+      "imageUrl": "https://images.unsplash.com/photo-1661975330226-c9480a570070?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx5ZWxsb3clMjBjb3JufGVufDB8fHx8MTc2NTgwMzA1MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yellow corn"
+    },
+    {
+      "id": "white-maize-1",
+      "description": "Close-up of white maize kernels.",
+      "imageUrl": "https://images.unsplash.com/photo-1696023012728-78080d30ca7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3aGl0ZSUyMGNvcm58ZW58MHx8fHwxNzY1ODAzMDUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "white corn"
+    },
+    {
+      "id": "red-onion-1",
+      "description": "Freshly harvested red onions.",
+      "imageUrl": "https://images.unsplash.com/photo-1588613000160-2b766dd44779?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxyZWQlMjBvbmlvbnN8ZW58MHx8fHwxNzY1ODY0MDUzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "red onions"
+    },
+    {
+      "id": "chickpeas-1",
+      "description": "A bowl of dried chickpeas.",
+      "imageUrl": "https://images.unsplash.com/photo-1745793652792-dd1624661142?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaGlja3BlYXMlMjBib3dsfGVufDB8fHx8MTc2NTg2NDA1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chickpeas bowl"
+    },
+    {
+      "id": "mangoes-1",
+      "description": "Ripe and juicy mangoes.",
+      "imageUrl": "https://images.unsplash.com/photo-1663018084454-86fd8150f950?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxyaXBlJTIwbWFuZ29lc3xlbnwwfHx8fDE3NjU4NjQwNTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ripe mangoes"
+    },
+    {
+      "id": "cow-milk-1",
+      "description": "A glass of fresh cow milk.",
+      "imageUrl": "https://images.unsplash.com/photo-1605942002814-b852b0873304?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxnbGFzcyUyMG1pbGt8ZW58MHx8fHwxNzY1Nzc5MTUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "glass milk"
+    },
+    {
+      "id": "desi-eggs-1",
+      "description": "A basket of brown desi eggs.",
+      "imageUrl": "https://images.unsplash.com/photo-1669943037694-9fde67acba05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxicm93biUyMGVnZ3N8ZW58MHx8fHwxNzY1ODAzMDUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "brown eggs"
+    },
+    {
+      "id": "chicks-1",
+      "description": "A group of small yellow chicks.",
+      "imageUrl": "https://images.unsplash.com/photo-1720508664783-0f880ba15c4d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8eWVsbG93JTIwY2hpY2tzfGVufDB8fHx8MTc2NTgwMzA1MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yellow chicks"
+    },
+    {
+      "id": "category-pulses",
+      "description": "Assortment of various pulses and legumes.",
+      "imageUrl": "https://picsum.photos/seed/201/400/300",
+      "imageHint": "assorted pulses"
+    },
+    {
+      "id": "category-dairy",
+      "description": "Various dairy products like milk, cheese, and yogurt.",
+      "imageUrl": "https://images.unsplash.com/photo-1506617420156-8e4536971650?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYWlyeSUyMHByb2R1Y3RzfGVufDB8fHx8MTc2NTg2NDA1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dairy products"
+    },
+    {
+      "id": "category-fruits",
+      "description": "A colorful assortment of fresh fruits.",
+      "imageUrl": "https://images.unsplash.com/photo-1680780562455-3dd94407a09c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZnJlc2glMjBmcnVpdHN8ZW58MHx8fHwxNzY1ODM1NDA5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh fruits"
+    },
+    {
+      "id": "category-vegetables",
+      "description": "A variety of fresh vegetables on a wooden table.",
+      "imageUrl": "https://images.unsplash.com/photo-1609126986933-e3c84f19d49c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmcmVzaCUyMHZlZ2V0YWJsZXN8ZW58MHx8fHwxNzY1NzgwMTk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh vegetables"
+    },
+    {
+      "id": "category-poultry",
+      "description": "Eggs and chicks representing the poultry category.",
+      "imageUrl": "https://images.unsplash.com/photo-1569466593977-94ee7ed02ec9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwb3VsdHJ5JTIwZmFybXxlbnwwfHx8fDE3NjU4NjQwNTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "poultry farm"
+    },
+    {
+      "id": "about-us-image",
+      "description": "A team of farmers working together in a field.",
+      "imageUrl": "https://images.unsplash.com/photo-1659021245220-8cf62b36fe25?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXJtZXJzJTIwd29ya2luZ3xlbnwwfHx8fDE3NjU4NjQwNTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farmers working"
+    }
+  ]
+}
