@@ -1,61 +1,129 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createProduct, getProducts } from '@/lib/models/Product';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import { createProduct, getProducts } from "@/lib/models/Product";
+import { getCategories } from "@/lib/models/Category";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
-export async function GET() {
-  try {
-    const products = await getProducts();
-    return NextResponse.json(products);
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-    return NextResponse.json({ message: 'Failed to fetch products' }, { status: 500 });
+/* ================= GET ALL / BY CATEGORY ================= */
+/*
+  IMPORTANT:
+  - Products store `category` as CATEGORY NAME (string)
+  - Import Product sends `categoryId` (_id)
+  - So we must map: categoryId → category.name
+*/
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const categoryId = searchParams.get("categoryId");
+
+  let products = await getProducts();
+
+  if (categoryId) {
+    const categories = await getCategories();
+
+    // ✅ Correct comparison: Mongo _id ↔ categoryId
+    const category = categories.find(
+      (c: any) => String(c._id) === String(categoryId)
+    );
+
+    if (!category) {
+      return NextResponse.json([]);
+    }
+
+    // ✅ Filter products by CATEGORY NAME
+    products = products.filter(
+      (p: any) => p.category === category.name
+    );
   }
+
+  return NextResponse.json(products);
 }
 
+/* ================= CREATE PRODUCT ================= */
+/*
+  NOTE:
+  - Category is saved as CATEGORY NAME (not id)
+  - This matches existing DB structure
+*/
+
 export async function POST(req: NextRequest) {
-  try {
-    const data = await req.formData();
-    const name = data.get('name') as string;
-    const description = data.get('description') as string;
-    const category = data.get('category') as string;
-    const hsCode = data.get('hsCode') as string;
-    const variants = JSON.parse(data.get('variants') as string);
-    const featured = data.get('featured') === 'true';
-    const status = data.get('status') as 'active' | 'inactive';
-    const images = data.getAll('images') as File[];
+  const data = await req.formData();
 
-    if (!name || !description || !category || !variants || !hsCode || !images || images.length === 0) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-    }
+  const name = data.get("name")?.toString().trim();
+  const description = data.get("description")?.toString().trim();
+  const category = data.get("category")?.toString().trim(); // ✅ CATEGORY NAME
+  const hsCode = data.get("hsCode")?.toString().trim();
 
-    const imageUrls: string[] = [];
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadDir, { recursive: true });
+  const minOrderQty = data.get("minOrderQty")?.toString().trim();
+  const discountedPrice = Number(data.get("discountedPrice"));
+  const sellingPrice = Number(data.get("sellingPrice"));
 
-    for (const imageFile of images) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-${imageFile.name}`;
-      const path = join(uploadDir, filename);
-      await writeFile(path, buffer);
-      imageUrls.push(`/uploads/${filename}`);
-    }
+  const featured = data.get("featured") === "true";
+  const status =
+    data.get("status") === "inactive" ? "inactive" : "active";
 
-    const newProduct = await createProduct({
-      name,
-      description,
-      category,
-      hsCode,
-      variants,
-      images: imageUrls,
-      featured,
-      status,
-    });
-    
-    return NextResponse.json(newProduct, { status: 201 });
-  } catch (error) {
-    console.error('Failed to create product:', error);
-    return NextResponse.json({ message: 'Failed to create product' }, { status: 500 });
+  const images = data.getAll("images") as File[];
+
+  /* ================= VALIDATION ================= */
+
+  if (
+    !name ||
+    !description ||
+    !category ||
+    !hsCode ||
+    !minOrderQty ||
+    isNaN(discountedPrice) ||
+    isNaN(sellingPrice) ||
+    !images.length
+  ) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
   }
+
+  /* ================= IMAGE UPLOAD ================= */
+
+  const uploadDir = join(process.cwd(), "public/uploads");
+  await mkdir(uploadDir, { recursive: true });
+
+  const imageUrls: string[] = [];
+
+  for (const image of images) {
+    if (image.size === 0) continue;
+
+    const buffer = Buffer.from(await image.arrayBuffer());
+    const filename = `${Date.now()}-${image.name}`;
+
+    await writeFile(join(uploadDir, filename), buffer);
+    imageUrls.push(`/uploads/${filename}`);
+  }
+
+  if (!imageUrls.length) {
+    return NextResponse.json(
+      { message: "Image upload failed" },
+      { status: 400 }
+    );
+  }
+
+  /* ================= CREATE PRODUCT ================= */
+
+  const product = await createProduct({
+    name,
+    description,
+    category, // ✅ stored as category NAME
+
+    hsCode,
+    minOrderQty,
+    discountedPrice,
+    sellingPrice,
+
+    images: imageUrls,
+    primaryImage: imageUrls[0],
+
+    featured,
+    status,
+  });
+
+  return NextResponse.json(product, { status: 201 });
 }

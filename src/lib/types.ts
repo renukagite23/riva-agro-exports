@@ -1,5 +1,7 @@
 import { ObjectId } from 'mongodb';
 
+/* ================= CATEGORY ================= */
+
 export interface Category {
   _id?: ObjectId;
   id: string;
@@ -10,25 +12,41 @@ export interface Category {
   status: 'active' | 'inactive';
 }
 
-export interface ProductVariant {
-  id: string;
-  name: string;
+/* ================= PRODUCT ================= */
+
+export interface ProductUnit {
+  unit: string;
   price: number;
 }
 
-export interface Product {
-  _id?: ObjectId;
+export type Product = {
+    _id?: string;
   id: string;
   name: string;
-  slug: string;
   description: string;
-  category: string; // category slug
-  variants: ProductVariant[];
+  slug: string;
+
+  category: string;
+  categoryName?: string;
+
   hsCode: string;
+
+  /* 🔹 OLD (keep for backward compatibility) */
+  units?: ProductUnit[];
+
+  /* 🔹 NEW (current product model) */
+  minOrderQty?: string;
+  discountedPrice?: number;
+  sellingPrice?: number;
+
   images: string[];
+  primaryImage: string;
+
   featured: boolean;
   status: 'active' | 'inactive';
-}
+};
+
+/* ================= CART ================= */
 
 export interface CartItem {
   productId: string;
@@ -40,12 +58,14 @@ export interface CartItem {
   image: string;
 }
 
+/* ================= ORDER ================= */
+
 export interface ShippingAddress {
-    name: string;
-    address: string;
-    city: string;
-    country: string;
-    zip: string;
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  zip: string;
 }
 
 export interface Order {
@@ -62,6 +82,7 @@ export interface Order {
   createdAt: string;
 }
 
+/* ================= USER ================= */
 
 export interface User {
   _id?: ObjectId;

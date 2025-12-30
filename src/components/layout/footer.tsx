@@ -1,48 +1,59 @@
-import Link from 'next/link';
-import { Logo } from '../icons/logo';
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import Link from "next/link";
+import { Logo } from "../icons/logo";
+import { Github, Linkedin, Twitter, MapPin, Phone, Mail } from "lucide-react";
 
 export default function Footer() {
   const footerLinks = [
     {
-      title: 'Company',
+      title: "Company",
       links: [
-        { href: '/about', label: 'About Us' },
-        { href: '/contact', label: 'Contact Us' },
-        { href: '/products', label: 'Products' },
+        { href: "/about", label: "About Us" },
+        { href: "/products", label: "Products" },
+        { href: "/contact", label: "Contact Us" },
       ],
     },
     {
-      title: 'Legal',
+      title: "Legal",
       links: [
-        { href: '#', label: 'Privacy Policy' },
-        { href: '#', label: 'Terms of Service' },
-        { href: '#', label: 'Export Policy' },
+        { href: "#", label: "Privacy Policy" },
+        { href: "#", label: "Terms & Conditions" },
+        { href: "#", label: "Export Policy" },
       ],
     },
   ];
 
   return (
-    <footer className="border-t bg-background">
-      <div className="container py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <div className="md:col-span-1">
+<footer className="bg-secondary border-t">
+  <div className="container py-14">
+
+        {/* Top Grid */}
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
+
+          {/* Brand Column */}
+          <div className="space-y-5">
             <Logo />
-            <p className="mt-4 text-sm text-muted-foreground">
-              Your trusted partner for premium agro exports.
+
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Riva Agro Exports is a globally trusted exporter of premium
+              agricultural products, delivering farm-fresh quality from India
+              to international markets.
             </p>
+
+       
           </div>
+
+          {/* Company Links */}
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h3 className="font-headline text-lg font-semibold">
+              <h4 className="font-semibold text-lg text-gray-900">
                 {section.title}
-              </h3>
-              <ul className="mt-4 space-y-2">
+              </h4>
+              <ul className="mt-5 space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary"
+                      className="text-sm text-muted-foreground hover:text-primary transition"
                     >
                       {link.label}
                     </Link>
@@ -51,22 +62,46 @@ export default function Footer() {
               </ul>
             </div>
           ))}
+
+          {/* Exporter Info Column */}
+          <div>
+            <h4 className="font-semibold text-lg text-gray-900">
+              Exporter Info
+            </h4>
+
+            <ul className="mt-5 space-y-4 text-sm text-muted-foreground">
+
+              <li className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-primary shrink-0" />
+                <span>
+                  Riva Agro Exports<br />
+                  Maharashtra, India
+                </span>
+              </li>
+
+              <li className="flex items-center gap-3">
+                <Phone className="h-5 w-5 text-primary" />
+                <span>+91 8000028181</span>
+              </li>
+
+              <li className="flex items-center gap-3">
+                <Mail className="h-5 w-5 text-primary" />
+                <span>info@rivaagroexports.com</span>
+              </li>
+
+            </ul>
+          </div>
         </div>
-        <div className="mt-8 border-t pt-8 flex flex-col md:flex-row items-center justify-between">
-          <p className="text-sm text-muted-foreground">
+
+        {/* Bottom Bar */}
+<div className="mt-10 border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground text-center md:text-left">
             &copy; {new Date().getFullYear()} Riva Agro Exports. All rights reserved.
           </p>
-          <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            <Link href="#" className="text-muted-foreground hover:text-primary">
-              <Twitter className="h-5 w-5" />
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary">
-              <Linkedin className="h-5 w-5" />
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary">
-              <Github className="h-5 w-5" />
-            </Link>
-          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Proudly Exporting Indian Agriculture Worldwide 🌍
+          </p>
         </div>
       </div>
     </footer>

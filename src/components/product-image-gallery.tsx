@@ -44,14 +44,15 @@ export function ProductImageGallery({ imageIds, productName }: ProductImageGalle
               src={image}
               alt={`${productName} thumbnail`}
               fill
-              className="object-cover"
+              className="object-contain scale-90 transition-transform"
+
               sizes="(max-width: 768px) 10vw, 5vw"
             />
           </button>
         ))}
       </div>
       <div className="flex-1">
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg shadow-md">
+<div className="relative w-full max-w-[420px] mx-auto aspect-square overflow-hidden rounded-lg">
           <Image
             src={selectedImage}
             alt={productName}

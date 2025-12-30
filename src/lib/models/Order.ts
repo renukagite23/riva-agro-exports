@@ -79,5 +79,7 @@ export const updateOrderStatus = async (id: string, status: Order['status']): Pr
         { returnDocument: 'after' }
     );
     
-    return result ? toOrder(result) : null;
+    const updatedDoc = (result as any)?.value ?? null;
+    if (!updatedDoc) return null;
+    return toOrder(updatedDoc);
 }

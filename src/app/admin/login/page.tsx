@@ -1,22 +1,20 @@
-
 "use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -24,69 +22,68 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
   const { toast } = useToast();
+
+  // ✅ If already logged in → dashboard
+  useEffect(() => {
+    fetch("/api/admin/check").then((res) => {
+      if (res.ok) {
+        router.replace("/admin/dashboard");
+      }
+    });
+  }, [router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
-      
-      const user = data.user;
-
-      if (user.role !== 'Admin') {
-        throw new Error('You are not authorized to access this page.');
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
       }
 
-      login(user);
       toast({
-        title: '✅ Admin logged in successfully',
-        description: `Welcome back, ${user.name}!`,
+        title: "✅ Login successful",
+        description: "Redirecting to dashboard…",
       });
-      router.push('/admin/dashboard');
-    } catch (error: any) {
-       toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message || 'Invalid email or password.',
+
+      // ✅ ONLY ONE redirect
+      router.replace("/admin/dashboard");
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: err.message,
       });
     }
   }
 
   return (
-    <div className="container flex min-h-[80vh] items-center justify-center py-12">
+    <div className="container flex min-h-[80vh] items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Admin Login</CardTitle>
-          <CardDescription>
-            Enter your admin credentials to access the dashboard.
-          </CardDescription>
+          <CardTitle>Admin Login</CardTitle>
+          <CardDescription>Admin access only</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -98,7 +95,7 @@ export default function AdminLoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="admin@example.com" {...field} />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,14 +108,14 @@ export default function AdminLoginPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input type="password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
+              <Button type="submit" className="w-full">
+                Login
               </Button>
             </form>
           </Form>

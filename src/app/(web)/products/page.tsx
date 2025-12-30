@@ -21,7 +21,7 @@ export default async function ProductsPage() {
   const data = await getData();
 
   return (
-    <Suspense fallback={<div className="p-6">Loading products...</div>}>
+    <Suspense fallback={<div className="p-10 text-center">Loading products…</div>}>
       <ProductsClient {...data} />
     </Suspense>
   );

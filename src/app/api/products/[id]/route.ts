@@ -1,94 +1,124 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getProductById, updateProduct, deleteProduct } from '@/lib/models/Product';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getProductById,
+  updateProduct,
+  deleteProduct,
+} from "@/lib/models/Product";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
+
+/* ================= GET SINGLE PRODUCT ================= */
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = params;
-    const product = await getProductById(id);
-    if (!product) {
-      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-    }
-    return NextResponse.json(product);
-  } catch (error) {
-    console.error('Failed to fetch product:', error);
-    return NextResponse.json({ message: 'Failed to fetch product' }, { status: 500 });
+  const { id } = await params;
+
+  const product = await getProductById(id);
+
+  if (!product) {
+    return NextResponse.json(
+      { message: "Product not found" },
+      { status: 404 }
+    );
   }
+
+  return NextResponse.json(product);
 }
+
+/* ================= UPDATE PRODUCT ================= */
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const { id } = params;
-        const data = await req.formData();
-        
-        const updateData: Partial<any> = {};
+  const { id } = await params;
 
-        if (data.has('name')) updateData.name = data.get('name');
-        if (data.has('description')) updateData.description = data.get('description');
-        if (data.has('category')) updateData.category = data.get('category');
-        if (data.has('hsCode')) updateData.hsCode = data.get('hsCode');
-        if (data.has('featured')) updateData.featured = data.get('featured') === 'true';
-        if (data.has('status')) updateData.status = data.get('status');
-        if (data.has('variants')) updateData.variants = JSON.parse(data.get('variants') as string);
-        if (data.has('existingImages')) {
-            const existingImages = data.get('existingImages');
-            updateData.images = existingImages ? (existingImages as string).split(',') : [];
-        }
+  const formData = await req.formData();
+  const updateData: any = {};
 
+  if (formData.get("name"))
+    updateData.name = String(formData.get("name"));
 
-        const newImages = data.getAll('images') as File[];
-        if (newImages && newImages.length > 0 && newImages[0].size > 0) {
-            const imageUrls : string[] = updateData.images || [];
-            const uploadDir = join(process.cwd(), 'public', 'uploads');
-            await mkdir(uploadDir, { recursive: true });
+  if (formData.get("description"))
+    updateData.description = String(formData.get("description"));
 
-            for (const imageFile of newImages) {
-                const bytes = await imageFile.arrayBuffer();
-                const buffer = Buffer.from(bytes);
-                const filename = `${Date.now()}-${imageFile.name}`;
-                const path = join(uploadDir, filename);
-                await writeFile(path, buffer);
-                imageUrls.push(`/uploads/${filename}`);
-            }
-            updateData.images = imageUrls;
-        }
-        
-        const updatedProduct = await updateProduct(id, updateData);
+  if (formData.get("category"))
+    updateData.category = String(formData.get("category"));
 
-        if (!updatedProduct) {
-            return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-        }
-        
-        return NextResponse.json(updatedProduct, { status: 200 });
-    } catch (error) {
-        console.error('Failed to update product:', error);
-        return NextResponse.json({ message: `Failed to update product: ${error}` }, { status: 500 });
+  if (formData.get("hsCode"))
+    updateData.hsCode = String(formData.get("hsCode"));
+
+  if (formData.get("minOrderQty"))
+    updateData.minOrderQty = String(formData.get("minOrderQty"));
+
+  if (formData.get("discountedPrice"))
+    updateData.discountedPrice = Number(
+      formData.get("discountedPrice")
+    );
+
+  if (formData.get("sellingPrice"))
+    updateData.sellingPrice = Number(
+      formData.get("sellingPrice")
+    );
+
+  updateData.featured = formData.get("featured") === "true";
+  updateData.status =
+    formData.get("status") === "active" ? "active" : "inactive";
+
+  /* ================= IMAGES (FIXED) ================= */
+
+  // 1️⃣ Parse existing images (even empty)
+  let images: string[] = [];
+
+  const existingImagesRaw = formData.get("existingImages");
+  if (existingImagesRaw) {
+    images = JSON.parse(String(existingImagesRaw));
+  }
+
+  // 2️⃣ Handle new uploads
+  const files = formData.getAll("images") as File[];
+
+  if (files.length && files[0].size > 0) {
+    const uploadDir = join(process.cwd(), "public/uploads");
+    await mkdir(uploadDir, { recursive: true });
+
+    for (const file of files) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const filename = `${Date.now()}-${file.name}`;
+      await writeFile(join(uploadDir, filename), buffer);
+      images.push(`/uploads/${filename}`);
     }
+  }
+
+  // 3️⃣ ALWAYS overwrite images (even empty)
+  updateData.images = images;
+  updateData.primaryImage = images[0] || "";
+
+  /* ================= UPDATE ================= */
+
+  const updated = await updateProduct(id, updateData);
+
+  if (!updated) {
+    return NextResponse.json(
+      { message: "Update failed" },
+      { status: 400 }
+    );
+  }
+
+  return NextResponse.json(updated);
 }
 
+/* ================= DELETE ================= */
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = params;
-    // Note: You might want to delete associated images from the filesystem here
-    const success = await deleteProduct(id);
-    if (success) {
-      return NextResponse.json({ message: 'Product deleted successfully' });
-    } else {
-      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-    }
-  } catch (error) {
-    console.error('Failed to delete product:', error);
-    return NextResponse.json({ message: 'Failed to delete product' }, { status: 500 });
-  }
+  const { id } = await params;
+
+  await deleteProduct(id);
+
+  return NextResponse.json({ success: true });
 }

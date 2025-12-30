@@ -1,53 +1,66 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createCategory, getCategories } from '@/lib/models/Category';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import { createCategory, getCategories } from "@/lib/models/Category";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
+/* ================= GET (ALL CATEGORIES) ================= */
+/* 🔹 Import Product will consume this */
 export async function GET() {
-  try {
-    const categories = await getCategories();
-    return NextResponse.json(categories);
-  } catch (error) {
-    console.error('Failed to fetch categories:', error);
-    return NextResponse.json({ message: 'Failed to fetch categories' }, { status: 500 });
-  }
+  const categories = await getCategories();
+
+  // ✅ IMPORTANT: return only active categories for dropdown
+  const activeCategories = categories.filter(
+    (c: any) => c.status === "active"
+  );
+
+  return NextResponse.json(activeCategories);
 }
 
+/* ================= POST (CREATE CATEGORY) ================= */
+/* 🔹 Used only in Admin → Categories */
 export async function POST(req: NextRequest) {
-  try {
-    const data = await req.formData();
-    const name = data.get('name') as string;
-    const featured = data.get('featured') === 'true';
-    const status = data.get('status') as 'active' | 'inactive';
-    const imageFile = data.get('image') as File | null;
+  const formData = await req.formData();
 
-    if (!name || !imageFile) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-    }
+  const name = formData.get("name")?.toString().trim();
+  const featured = formData.get("featured") === "true";
+  const status =
+    formData.get("status") === "inactive" ? "inactive" : "active";
+  const image = formData.get("image") as File | null;
 
-    // Handle image upload
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    const filename = `${Date.now()}-${imageFile.name}`;
-    const path = join(uploadDir, filename);
+  /* ---------- validation ---------- */
 
-    // Ensure the upload directory exists
-    await mkdir(uploadDir, { recursive: true });
-    
-    await writeFile(path, buffer);
-    const imageUrl = `/uploads/${filename}`;
-
-    const newCategory = await createCategory({
-      name,
-      featured,
-      image: imageUrl,
-      status,
-    });
-    
-    return NextResponse.json(newCategory, { status: 201 });
-  } catch (error) {
-    console.error('Failed to create category:', error);
-    return NextResponse.json({ message: 'Failed to create category' }, { status: 500 });
+  if (!name) {
+    return NextResponse.json(
+      { message: "Category name is required" },
+      { status: 400 }
+    );
   }
+
+  if (!image || image.size === 0) {
+    return NextResponse.json(
+      { message: "Category image is required" },
+      { status: 400 }
+    );
+  }
+
+  /* ---------- upload image ---------- */
+
+  const uploadDir = join(process.cwd(), "public/uploads");
+  await mkdir(uploadDir, { recursive: true });
+
+  const buffer = Buffer.from(await image.arrayBuffer());
+  const filename = `${Date.now()}-${image.name}`;
+
+  await writeFile(join(uploadDir, filename), buffer);
+
+  /* ---------- create category ---------- */
+
+  const newCategory = await createCategory({
+    name,
+    featured,
+    status,
+    image: `/uploads/${filename}`,
+  });
+
+  return NextResponse.json(newCategory, { status: 201 });
 }
